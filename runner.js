@@ -53,7 +53,7 @@
         var S = load(), today = new Date().toDateString();
         if (S.day !== today) { S.day = today; S.n = 0; save(S); }
         if (S.n >= CAP) { st.msg = 'daily cap reached, waiting'; await sleep(10 * 60 * 1000); continue; }
-        var m = await (await fetch(RAW + 'manifest.json', { cache: 'no-store' })).json();
+        var m = await (await fetch(RAW + 'manifest.json?v=' + Date.now(), { cache: 'no-store' })).json();
         var it = m.items.find(function (x) { return S.done.indexOf(x.key) < 0; });
         if (!it) { st.msg = 'ALL DONE'; break; }
         st.msg = 'adding ' + it.t.slice(0, 40);
