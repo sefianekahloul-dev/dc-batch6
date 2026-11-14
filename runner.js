@@ -60,7 +60,10 @@
         if (!it) { st.msg = 'ALL DONE'; break; }
         st.msg = 'adding ' + it.t.slice(0, 40);
         if (load().done.indexOf(it.key) >= 0) continue;
-        await addOne(it);
+        try { await addOne(it); st.retry = 0; } catch (e) {
+          if (/no upload config|s3 40\d|not confirmed/.test(e.message) && (st.retry = (st.retry || 0) + 1) <= 2) { st.msg = 'hiccup (' + e.message.slice(0, 40) + '), waiting 15 min'; await sleep(15 * 60 * 1000); continue; }
+          throw e;
+        }
         S = load(); S.done.push(it.key); S.n++; S.left--; save(S); st.ok++;
         var w = rnd(GAP[0], GAP[1]);
         if (S.left <= 0) { w = rnd(BRK[0], BRK[1]) * 60; S.left = Math.round(rnd(EVERY[0], EVERY[1])); save(S); }
