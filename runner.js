@@ -1,6 +1,8 @@
 // Slow in-page uploader for Payhip. Run once in a payhip.com tab; it keeps going without page navigation.
 (function () {
   if (window.__dcs && window.__dcs.running) return 'already running';
+  var HB = 'dc6beat'; if (Date.now() - Number(localStorage.getItem(HB) || 0) < 60000) return 'another runner is active';
+  setInterval(function () { localStorage.setItem(HB, String(Date.now())); }, 10000); localStorage.setItem(HB, String(Date.now()));
   var RAW = 'https://raw.githubusercontent.com/sefianekahloul-dev/dc-batch6/main/';
   var K = 'dc6run', CAP = 200, GAP = [45, 120], EVERY = [18, 30], BRK = [6, 14];
   var st = window.__dcs = { running: true, stop: false, msg: 'init', ok: 0 };
@@ -57,6 +59,7 @@
         var it = m.items.find(function (x) { return S.done.indexOf(x.key) < 0; });
         if (!it) { st.msg = 'ALL DONE'; break; }
         st.msg = 'adding ' + it.t.slice(0, 40);
+        if (load().done.indexOf(it.key) >= 0) continue;
         await addOne(it);
         S = load(); S.done.push(it.key); S.n++; S.left--; save(S); st.ok++;
         var w = rnd(GAP[0], GAP[1]);
