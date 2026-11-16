@@ -4,7 +4,7 @@
   var HB = 'dc6beat'; if (Date.now() - Number(localStorage.getItem(HB) || 0) < 60000) return 'another runner is active';
   setInterval(function () { localStorage.setItem(HB, String(Date.now())); }, 10000); localStorage.setItem(HB, String(Date.now()));
   var RAW = 'https://raw.githubusercontent.com/sefianekahloul-dev/dc-batch6/main/';
-  var K = 'dc6run', CAP = 100000, GAP = [3, 7], EVERY = [80, 120], BRK = [1, 2];
+  var K = 'dc6run', CAP = 100000, GAP = [1, 2], EVERY = [100000, 100000], BRK = [0, 0];
   var st = window.__dcs = { running: true, stop: false, msg: 'init', ok: 0 };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var __w = new Worker(URL.createObjectURL(new Blob(['onmessage=function(e){setTimeout(function(){postMessage(e.data.id)},e.data.ms)}'], { type: 'text/javascript' }))), __id = 0, __p = {};
