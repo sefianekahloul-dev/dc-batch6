@@ -73,7 +73,7 @@
         await sleep(w * 1000);
       }
     } catch (e) {
-      if (/Failed to fetch|NetworkError|Load failed/.test(e.message) && (st.net = (st.net || 0) + 1) <= 8) { st.msg = 'network hiccup, retrying in 5 min'; await sleep(300000); return loop(); }
+      if (!/warning/i.test(e.message) && (st.net = (st.net || 0) + 1) <= 12) { st.msg = 'error (' + e.message.slice(0, 40) + '), retrying in 3 min'; await sleep(180000); return loop(); }
       st.msg = 'STOPPED: ' + e.message;
     }
     st.running = false;
