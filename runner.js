@@ -5,7 +5,7 @@
   setInterval(function () { localStorage.setItem(HB, String(Date.now())); }, 10000); localStorage.setItem(HB, String(Date.now()));
   var RAW = 'https://raw.githubusercontent.com/sefianekahloul-dev/dc-batch6/main/';
   var K = 'dc6run', CAP = 100000, GAP = [1, 2], EVERY = [100000, 100000], BRK = [0, 0];
-  var LANES = 4, claimed = {}, st = window.__dcs = { running: true, stop: false, msg: 'init', ok: 0, lanes: 0 };
+  var LANES = 7, claimed = {}, st = window.__dcs = { running: true, stop: false, msg: 'init', ok: 0, lanes: 0 };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var __w = new Worker(URL.createObjectURL(new Blob(['onmessage=function(e){setTimeout(function(){postMessage(e.data.id)},e.data.ms)}'], { type: 'text/javascript' }))), __id = 0, __p = {};
   __w.onmessage = function (e) { var f = __p[e.data]; delete __p[e.data]; f && f(); };
