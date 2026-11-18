@@ -24,8 +24,15 @@
       var btn = [].slice.call(d.querySelectorAll('button,input[type=submit]')).filter(function (b) { return /save changes/i.test(b.innerText || b.value || ''); })[0];
       if (!btn) return { ok: false, why: 'nosave' };
       btn.click();
-      var nav = await waitFor(function () { return f.contentWindow.location.pathname !== '/collection/edit/' + id; }, 90000);
-      return { ok: nav, hit: hit, already: already, missing: missing, saved: true, why: nav ? '' : 'savetimeout' };
+      await waitFor(function () { return f.contentWindow.location.pathname !== '/collection/edit/' + id; }, 40000);
+      await sleep(3000);
+      f.src = '/collection/edit/' + id + '?v=' + Date.now();
+      await sleep(4000);
+      var ok2 = await waitFor(function () { return f.contentDocument && f.contentWindow.location.pathname === '/collection/edit/' + id && f.contentDocument.querySelectorAll('.js-product-checkbox').length > 50; }, 120000);
+      if (!ok2) return { ok: false, why: 'verifyload', saved: true };
+      var rows2 = f.contentDocument.querySelectorAll('.js-product-row'), on = 0;
+      for (i = 0; i < rows2.length; i++) { var l2 = (rows2[i].innerText || '').trim(); if (want[l2] && rows2[i].querySelector('.js-product-checkbox').checked) on++; }
+      return { ok: on >= hit, hit: hit, on: on, missing: missing, saved: true, why: on >= hit ? '' : 'notsaved' };
     } catch (e) { return { ok: false, why: String(e).slice(0, 60) }; }
     finally { await sleep(1500); f.remove(); }
   }
