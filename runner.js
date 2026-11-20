@@ -5,7 +5,7 @@
   setInterval(function () { localStorage.setItem(HB, String(Date.now())); }, 10000); localStorage.setItem(HB, String(Date.now()));
   var RAW = 'https://raw.githubusercontent.com/sefianekahloul-dev/dc-batch6/main/';
   var K = 'dc6run', CAP = 100000, GAP = [0, 1], EVERY = [100000, 100000], BRK = [0, 0];
-  var LANES = 3, nextAt = 0, claimed = {}, st = window.__dcs = { running: true, stop: false, msg: 'init', ok: 0, lanes: 0 };
+  var LANES = 5, nextAt = 0, claimed = {}, st = window.__dcs = { running: true, stop: false, msg: 'init', ok: 0, lanes: 0 };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var __w = new Worker(URL.createObjectURL(new Blob(['onmessage=function(e){setTimeout(function(){postMessage(e.data.id)},e.data.ms)}'], { type: 'text/javascript' }))), __id = 0, __p = {};
   __w.onmessage = function (e) { var f = __p[e.data]; delete __p[e.data]; f && f(); };
@@ -60,7 +60,7 @@
         var m = await (await fetch(RAW + 'manifest.json?v=' + Date.now(), { cache: 'no-store' })).json();
         var DN = load().done, it = m.items.find(function (x) { return DN.indexOf(x.key) < 0 && !claimed[x.key]; });
         if (!it) { st.msg = 'waiting for new books'; await sleep(60000); continue; }
-        claimed[it.key] = 1; var ws = Math.max(0, nextAt - Date.now()); nextAt = Math.max(nextAt, Date.now()) + 10000; if (ws) await sleep(ws); st.msg = 'adding ' + it.t.slice(0, 40);
+        claimed[it.key] = 1; var ws = Math.max(0, nextAt - Date.now()); nextAt = Math.max(nextAt, Date.now()) + 2500; if (ws) await sleep(ws); st.msg = 'adding ' + it.t.slice(0, 40);
         if (load().done.indexOf(it.key) >= 0) { delete claimed[it.key]; continue; }
         try { await addOne(it); st.retry = 0; } catch (e) {
           delete claimed[it.key];
