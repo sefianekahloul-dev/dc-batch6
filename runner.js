@@ -64,6 +64,7 @@
         if (load().done.indexOf(it.key) >= 0) { delete claimed[it.key]; continue; }
         try { await addOne(it); st.retry = 0; } catch (e) {
           delete claimed[it.key];
+          if (/could not be decoded|Failed to execute/.test(e.message)) { claimed[it.key] = 1; (st.skipped = st.skipped || []).push(it.key); continue; }
           if (/no upload config|s3 40\d|not confirmed|Failed to fetch|NetworkError|Load failed/.test(e.message) && (st.retry = (st.retry || 0) + 1) <= 2) { st.msg = 'hiccup (' + e.message.slice(0, 40) + '), waiting 2 min'; await sleep(2 * 60 * 1000); continue; }
           throw e;
         }
