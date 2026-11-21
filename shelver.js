@@ -41,22 +41,26 @@
     var items = m.items, S = parseInt(localStorage[K] || '0', 10) || 0;
     var DN = {}; (JSON.parse(localStorage.dc6run || '{}').done || []).forEach(function (k) { DN[k] = 1; });
     var end = S;
-    while (end < items.length && end - S < 400 && DN[items[end].key]) end++;
+    while (end < items.length && end - S < 1500 && DN[items[end].key]) end++;
     if (end - S < 30) { say('waiting ' + (end - S) + ' new (from ' + S + ')'); return; }
     var by = {};
     items.slice(S, end).forEach(function (x) { (x.col || []).forEach(function (c) { (by[c] = by[c] || []).push(x.t); }); });
-    var all = true, ids = Object.keys(by);
-    for (var i = 0; i < ids.length && !sh.stop; i++) {
-      say('shelving ' + ids[i] + ' (' + by[ids[i]].length + ')');
-      var r = await shelve(ids[i], by[ids[i]]);
-      sh.log.push(ids[i] + ' ' + JSON.stringify(r));
-      if (!r.ok) all = false;
-      await sleep(3000);
+    var all = true, ids = Object.keys(by).sort(function (a, b) { return by[b].length - by[a].length; }), qi = 0;
+    async function worker(w) {
+      while (qi < ids.length && !sh.stop) {
+        var id = ids[qi++];
+        say('w' + w + ' shelving ' + id + ' (' + by[id].length + ')');
+        var r = await shelve(id, by[id]);
+        sh.log.push(id + ' ' + JSON.stringify(r));
+        if (!r.ok) all = false;
+        await sleep(1500);
+      }
     }
+    await Promise.all([worker(1), sleep(20000).then(function () { return worker(2); }), sleep(40000).then(function () { return worker(3); })]);
     if (all) { localStorage[K] = String(end); say('shelved to ' + end); } else say('retry later from ' + S);
   }
   (async function () {
-    while (!sh.stop) { try { await cycle(); } catch (e) { say('err ' + String(e).slice(0, 80)); } await sleep(5 * 60 * 1000); }
+    while (!sh.stop) { try { await cycle(); } catch (e) { say('err ' + String(e).slice(0, 80)); } await sleep(60 * 1000); }
     sh.running = false;
   })();
 })();
