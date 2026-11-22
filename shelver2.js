@@ -42,7 +42,7 @@
     var items = m.items, S = parseInt(localStorage[K] || '0', 10) || 0;
     var DN = {}; (JSON.parse(localStorage.dc6run || '{}').done || []).forEach(function (k) { DN[k] = 1; });
     var end = S;
-    while (end < items.length && end - S < 1500 && DN[items[end].key]) end++;
+    while (end < items.length && end - S < 6000 && DN[items[end].key]) end++;
     var prog = {}; try { prog = JSON.parse(localStorage.dc6shprog || '{}'); } catch (e) {}
     if (prog.S === S && prog.end > S) end = prog.end; else prog = { S: S, end: end, done: [] };
     localStorage.dc6shprog = JSON.stringify(prog);
