@@ -43,22 +43,25 @@
     var DN = {}; (JSON.parse(localStorage.dc6run || '{}').done || []).forEach(function (k) { DN[k] = 1; });
     var end = S;
     while (end < items.length && end - S < 1500 && DN[items[end].key]) end++;
+    var prog = {}; try { prog = JSON.parse(localStorage.dc6shprog || '{}'); } catch (e) {}
+    if (prog.S === S && prog.end > S) end = prog.end; else prog = { S: S, end: end, done: [] };
+    localStorage.dc6shprog = JSON.stringify(prog);
     if (end - S < 30) { say('waiting ' + (end - S) + ' new (from ' + S + ')'); return; }
     var by = {};
     items.slice(S, end).forEach(function (x) { (x.col || []).forEach(function (c) { (by[c] = by[c] || []).push(x.t); }); });
     var all = true, ids = Object.keys(by).sort(function (a, b) { return by[b].length - by[a].length; }), qi = 0;
     async function worker(w) {
       while (qi < ids.length && !sh.stop) {
-        var id = ids[qi++];
+        var id = ids[qi++]; if (prog.done.indexOf(id) >= 0) continue;
         say('w' + w + ' shelving ' + id + ' (' + by[id].length + ')');
         var r = await shelve(id, by[id]);
         sh.log.push(id + ' ' + JSON.stringify(r)); try { localStorage.dc6shlog = JSON.stringify(sh.log.slice(-30)); } catch (e) {}
-        if (!r.ok) all = false;
+        if (!r.ok) all = false; else { prog.done.push(id); localStorage.dc6shprog = JSON.stringify(prog); }
         await sleep(1500);
       }
     }
     await worker(1);
-    if (all) { localStorage[K] = String(end); say('shelved to ' + end); } else say('retry later from ' + S);
+    if (all) { localStorage[K] = String(end); localStorage.removeItem('dc6shprog'); say('shelved to ' + end); } else say('retry later from ' + S);
   }
   (async function () {
     while (!sh.stop) { try { await cycle(); } catch (e) { say('err ' + String(e).slice(0, 80)); } await sleep(60 * 1000); }
