@@ -11,7 +11,7 @@
     f.style.cssText = 'display:none';
     f.src = '/collection/edit/' + id; document.body.appendChild(f);
     try {
-      var ok = await waitFor(function () { return f.contentDocument && f.contentWindow.location.pathname === '/collection/edit/' + id && f.contentDocument.querySelectorAll('.js-product-checkbox').length > 50; }, 120000);
+      var ok = await waitFor(function () { return f.contentDocument && f.contentWindow.location.pathname === '/collection/edit/' + id && f.contentDocument.querySelectorAll('.js-product-checkbox').length > 50; }, 420000);
       if (!ok) return { ok: false, why: 'load' };
       var d = f.contentDocument, want = {}, i, hit = 0, already = 0;
       titles.forEach(function (t) { want[NT(t)] = 1; });
@@ -29,7 +29,7 @@
       await sleep(3000);
       f.src = '/collection/edit/' + id + '?v=' + Date.now();
       await sleep(4000);
-      var ok2 = await waitFor(function () { return f.contentDocument && f.contentWindow.location.pathname === '/collection/edit/' + id && f.contentDocument.querySelectorAll('.js-product-checkbox').length > 50; }, 120000);
+      var ok2 = await waitFor(function () { return f.contentDocument && f.contentWindow.location.pathname === '/collection/edit/' + id && f.contentDocument.querySelectorAll('.js-product-checkbox').length > 50; }, 420000);
       if (!ok2) return { ok: false, why: 'verifyload', saved: true };
       var rows2 = f.contentDocument.querySelectorAll('.js-product-row'), on = 0;
       for (i = 0; i < rows2.length; i++) { var l2 = NT(rows2[i].textContent); if (want[l2] && rows2[i].querySelector('.js-product-checkbox').checked) on++; }
